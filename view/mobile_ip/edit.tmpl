@@ -1,0 +1,29 @@
+{{define "title"}}Edit{{end}}
+{{define "head"}}{{end}}
+{{define "content"}}
+	<div class="page-header">
+		<h1>{{template "title" .}}</h1>
+	</div>
+	
+	<!--<form method="post" action="{{$.CurrentURI}}?_method=patch"> -->
+	<form method="post" action="{{.BaseURI}}mobile_ip/edit/1?_method=patch">
+		
+		<div class="form-group">
+			<label for="ip_address">Item</label>
+			<div><input type="text" class="form-control" id="ip_address" name="ip_address" size="10" placeholder="IP Address" /></input></div>
+		</div>
+		
+		<button type="submit" class="btn btn-success" title="Save" />
+			<span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Save
+		</button>
+		
+		<a title="Back" class="btn btn-default" role="button" href="{{$.GrandparentURI}}">
+			<span class="glyphicon glyphicon-menu-left" aria-hidden="true"></span> Back
+		</a>
+		
+		<input type="hidden" name="_token" value="{{$.token}}">
+	</form>
+	
+	{{template "footer" .}}
+{{end}}
+{{define "foot"}}{{end}}
