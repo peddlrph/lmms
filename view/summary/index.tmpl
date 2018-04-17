@@ -1,0 +1,21 @@
+{{define "title"}}Summary{{end}}
+{{define "head"}}{{end}}
+{{define "content"}}
+	<div class="page-header">
+		<h1>Summary</h1>
+	</div>
+	{{range $n := .items}}
+		<div class="panel panel-default">
+			<div class="panel-body">
+				<p>Date: {{.SnapshotDate_Formatted}}</p>
+				<p>Cash: {{.Cash_String}}</p>
+				<p>Load: {{.Loads_String}}</p>
+				<p>SmartMoney: {{.SmartMoney_String}}</p>
+				<p>Codes: {{.Codes_String}}</p>
+				<p>Total: {{.Total_String}}</p>
+			</div>
+		</div>
+	{{end}}	
+	{{template "footer" .}}
+{{end}}
+{{define "foot"}}{{end}}

@@ -1,0 +1,26 @@
+{{define "title"}}Blueprint{{end}}
+{{define "head"}}{{end}}
+{{define "content"}}
+	{{if eq .AuthLevel "auth"}}
+	
+		<div class="page-header">
+			<h1>Hello, {{.first_name}}</h1>
+		</div>
+		<p>You have arrived. Click {{LINK "notepad" "here"}} to view your notepad.</p>
+		<p>You have arrived. Click {{LINK "cash" "here"}} to view your cash.</p>
+		<p>You have arrived. Click {{LINK "load" "here"}} to view your load.</p>
+		<p>You have arrived. Click {{LINK "smartmoney" "here"}} to view your smartmoney.</p>
+		<p>You have arrived. Click {{LINK "transaction" "here"}} to view your transaction.</p>
+	
+	{{else}}
+	
+		<div class="page-header">
+			<h1>{{template "title" .}}</h1>
+		</div>
+		<p>Click {{LINK "login" "here"}} to login.</p>
+	
+	{{end}}
+	
+	{{template "footer" .}}
+{{end}}
+{{define "foot"}}{{end}}

@@ -1,0 +1,31 @@
+{{define "title"}}Item{{end}}
+{{define "head"}}{{end}}
+{{define "content"}}
+	<div class="page-header">
+		<h1>{{template "title" .}}</h1>
+	</div>
+	
+	<div class="container panel panel-default">
+		<div class="row">
+			<div class="col-sm-2">
+				<p>Date</p>
+				<p>Amount</p>
+				<p>Details</p>
+			</div>
+			<div class="col-sm-5">
+				<p>{{.item.Trans_Datetime.Time}}</p>
+				<p>{{.item.Amount.Float64}}</p>
+				<p>{{.item.Details.String}}</p>
+			</div>
+	</div>
+
+	<div style="display: inline-block;">
+	
+		<a title="Back" class="btn btn-default" role="button" href="{{$.GrandparentURI}}">
+			<span class="glyphicon glyphicon-menu-left" aria-hidden="true"></span> Back
+		</a>
+	</div>
+	
+	{{template "footer" .}}
+{{end}}
+{{define "foot"}}{{end}}

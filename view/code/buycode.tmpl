@@ -1,0 +1,29 @@
+{{define "title"}}Buy Codes{{end}}
+{{define "head"}}{{end}}
+{{define "content"}}
+	<div class="page-header">
+		<h1>{{template "title" .}}</h1>
+	</div>
+	<form method="post" action="{{$.CurrentURI}}">
+		<div class="form-group">
+			<label for="trans_datetime">Date</label>
+			<div><input type="date" class="form-control" id="trans_datetime" name="trans_datetime" size="10" value={{.curdate}} /></input></div>
+			<label for="code_count">Code Count</label>
+			<div><input type="text" class="form-control" id="code_count" name="code_count" size="10" placeholder="Number of Codes" /></input></div>
+			<label for="details">Details</label>
+			<div><textarea rows="5" class="form-control" id="details" name="details" placeholder="Type your text here..." />{{TEXTAREA "name" .item.Details .}}</textarea></div>
+		</div>
+		<p>{{.curdate}}</p>
+		<button type="submit" class="btn btn-success" title="Save" />
+			<span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Save
+		</button>
+		
+		<a title="Back" class="btn btn-default" role="button" href="{{$.ParentURI}}">
+			<span class="glyphicon glyphicon-menu-left" aria-hidden="true"></span> Back
+		</a>
+		
+		<input type="hidden" name="_token" value="{{$.token}}">
+	</form>	
+	{{template "footer" .}}
+{{end}}
+{{define "foot"}}{{end}}
