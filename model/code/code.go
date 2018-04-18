@@ -152,7 +152,7 @@ func Code2Muni(db Connection, trans_date string, codecount string, details strin
 	amount := strconv.FormatInt(3698*cnt, 10)
 	amt, _ := strconv.ParseFloat(amount, 64)
 
-	//fmt.Println(cnt)
+	fmt.Println(cnt)
 
 	fee := 100.00 * cnt
 
@@ -186,8 +186,7 @@ func Code2Muni(db Connection, trans_date string, codecount string, details strin
 		(trans_datetime,trans_code,code_count,amount,details)
 		VALUES
 		(?,?,?,?,?)
-		`, codestable), trans_date,
-		trans_code, cnt*(-1), amt*(-1), code_details)
+		`, codestable), trans_date, trans_code, cnt*(-1), amt*(-1), code_details)
 	if err != nil {
 		return result, err
 	}
@@ -219,11 +218,18 @@ func Code2Muni(db Connection, trans_date string, codecount string, details strin
 func Code2Brgy(db Connection, trans_date string, codecount string, details string) (sql.Result, error) {
 	//amt, _ := strconv.ParseFloat(amount, 64)
 
+	//fmt.Println(codecount)
+
 	cnt, _ := strconv.ParseInt(codecount, 10, 64)
 	amount := strconv.FormatInt(3698*cnt, 10)
 	amt, _ := strconv.ParseFloat(amount, 64)
 
+	//fmt.Println(cnt)
+
 	fee := 200.00 * cnt
+
+	//fmt.Println(fee)
+
 	trans_code := "Code2Brgy"
 	fee_string := fmt.Sprintf("%.2f", float64(fee))
 
@@ -253,8 +259,7 @@ func Code2Brgy(db Connection, trans_date string, codecount string, details strin
 		(trans_datetime,trans_code,code_count,amount,details)
 		VALUES
 		(?,?,?,?,?)
-		`, codestable), trans_date, trans_code, cnt*(-1),
-		amt*(-1), code_details)
+		`, codestable), trans_date, trans_code, cnt*(-1), amt*(-1), code_details)
 	if err != nil {
 		return result, err
 	}
@@ -347,108 +352,6 @@ func Code2Dealer(db Connection, trans_date string, codecount string, details str
 	if err != nil {
 		return result, err
 	}
-	return result, err
-}
-
-func Code2DealerY(db Connection, trans_date string, amount string, details string) (sql.Result, error) {
-	amt, _ := strconv.ParseFloat(amount, 64)
-
-	cnt := 0
-
-	fee := 300.00 * cnt
-	fee_string := fmt.Sprintf("%.2f", float64(fee))
-	trans_details := "Code2Dealer: |"
-	trans_details = trans_details + "-  Subtract " + amount + " from load.|"
-	trans_details = trans_details + "-  Add " + amount + " to cash.|"
-	trans_details = trans_details + "-  Add " + fee_string + " to cash as fee.|"
-	trans_details = trans_details + "Details: " + details
-	result, err := db.Exec(fmt.Sprintf(`
-		INSERT INTO %v
-		(trans_datetime,amount,details)
-		VALUES
-		(?,?,?)
-		`, transtable), trans_date,
-		amt, trans_details)
-	if err != nil {
-		return result, err
-	}
-	trans_id, _ := result.LastInsertId()
-	transactiontag := " Trans#: " + strconv.FormatInt(trans_id, 10)
-
-	code_details := "Code2Dealer: |"
-	code_details = code_details + "Details: " + details + "|"
-	code_details = code_details + transactiontag
-	result, err = db.Exec(fmt.Sprintf(`
-		INSERT INTO %v
-		(trans_datetime,amount,details)
-		VALUES
-		(?,?,?)
-		`, codestable), trans_date,
-		amt*(-1), code_details)
-	if err != nil {
-		return result, err
-	}
-
-	cash_details := "Code2Dealer: |"
-	cash_details = cash_details + "Details: " + details + "|"
-	cash_details = cash_details + transactiontag
-	result, err = db.Exec(fmt.Sprintf(`
-		INSERT INTO %v
-		(trans_datetime,amount,details)
-		VALUES
-		(?,?,?)
-		`, cashtable), trans_date,
-		amt, cash_details)
-
-	result, err = db.Exec(fmt.Sprintf(`
-		INSERT INTO %v
-		(trans_datetime,amount,details)
-		VALUES
-		(?,?,?)
-		`, cashtable), trans_date,
-		fee, cash_details)
-	if err != nil {
-		return result, err
-	}
-	return result, err
-}
-
-func Code2DealerX(db Connection, trans_date string, amount string, details string) (sql.Result, error) {
-	amt, _ := strconv.ParseFloat(amount, 64)
-	trans_details := details + " Code2Dealer: "
-	result, err := db.Exec(fmt.Sprintf(`
-		INSERT INTO %v
-		(trans_datetime,amount,details)
-		VALUES
-		(?,?,?)
-		`, cashtable), trans_date,
-		amt, details)
-	trans_details = trans_details + "Add " + amount + " to cash."
-	result, err = db.Exec(fmt.Sprintf(`
-		INSERT INTO %v
-		(trans_datetime,amount,details)
-		VALUES
-		(?,?,?)
-		`, codestable), trans_date,
-		amt*(-1), details)
-	trans_details = trans_details + " Subtract " + amount + " from codes."
-	//fee_rate := get_fee_rate("ReceiveSP")
-	fee := fmt.Sprintf("%.2f", 300.00)
-	result, err = db.Exec(fmt.Sprintf(`
-		INSERT INTO %v
-		(trans_datetime,amount,details)
-		VALUES
-		(?,?,?)
-		`, cashtable), trans_date,
-		fee, details)
-	trans_details = trans_details + " Add " + fee + " to cash as fee."
-	result, err = db.Exec(fmt.Sprintf(`
-		INSERT INTO %v
-		(trans_datetime,amount,details)
-		VALUES
-		(?,?,?)
-		`, table), trans_date,
-		amt, trans_details)
 	return result, err
 }
 
