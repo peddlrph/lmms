@@ -2,6 +2,11 @@
 package summary
 
 import (
+	//"bytes"
+	//	"fmt"
+	"bufio"
+	"os"
+	//"io/ioutil"
 	"net/http"
 
 	"github.com/blue-jay/blueprint/lib/flight"
@@ -10,6 +15,8 @@ import (
 
 	"github.com/blue-jay/core/router"
 	"github.com/peddlrph/lib/utilities"
+
+	"github.com/wcharczuk/go-chart"
 )
 
 var (
@@ -51,8 +58,38 @@ func Index(w http.ResponseWriter, r *http.Request) {
 
 	//prettysum := utilities.DisplayPrettyFloat(sum)
 
+	pie := chart.PieChart{
+		Title:  "Summary",
+		Width:  512,
+		Height: 512,
+		Values: []chart.Value{
+			{Value: items[0].Cash.Float64, Label: "Cash"},
+			{Value: items[0].Loads.Float64, Label: "Loads"},
+			{Value: items[0].SmartMoney.Float64, Label: "SmartMoney"},
+			{Value: items[0].Codes.Float64, Label: "Codes"},
+		},
+	}
+
+	outputfile := "./asset/static/outputfile.png"
+
+	//buffer := []byte{}
+
+	f, _ := os.Create(outputfile)
+
+	writer := bufio.NewWriter(f)
+
+	defer f.Close()
+
+	_ = pie.Render(chart.PNG, writer)
+
+	writer.Flush()
+
+	//_ = ioutil.WriteFile(outputfile, buffer, 0644)
+	//check(err)
+
 	v := c.View.New("summary/index")
 	v.Vars["items"] = items
+	v.Vars["buf"] = outputfile
 	v.Render(w, r)
 }
 
