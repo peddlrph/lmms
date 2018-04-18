@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS `loads` (
   `trans_code` varchar(30) NOT NULL,
   `mobile_number` varchar(12) DEFAULT NULL,
   `amount` decimal(10,2) NOT NULL,
+  `fee` boolean DEFAULT 0,
   `details` varchar(200) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT NULL,
