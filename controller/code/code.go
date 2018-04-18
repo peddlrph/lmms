@@ -164,11 +164,11 @@ func Code2BrgySave(w http.ResponseWriter, r *http.Request) {
 
 	if !u.IsPositiveInteger(r.FormValue("code_count")) {
 		c.FlashNotice("Enter valid amount")
-		BuyCode(w, r)
+		Code2Brgy(w, r)
 		return
 	}
 
-	_, err := code.Code2Brgy(c.DB, r.FormValue("trans_datetime"), r.FormValue("amount"), r.FormValue("details"))
+	_, err := code.Code2Brgy(c.DB, r.FormValue("trans_datetime"), r.FormValue("code_count"), r.FormValue("details"))
 	if err != nil {
 		c.FlashErrorGeneric(err)
 		Code2Brgy(w, r)
@@ -188,7 +188,7 @@ func Code2DealerSave(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err := code.Code2Dealer(c.DB, r.FormValue("trans_datetime"), r.FormValue("amount"), r.FormValue("details"))
+	_, err := code.Code2Dealer(c.DB, r.FormValue("trans_datetime"), r.FormValue("code_count"), r.FormValue("details"))
 	if err != nil {
 		c.FlashErrorGeneric(err)
 		Code2Dealer(w, r)
