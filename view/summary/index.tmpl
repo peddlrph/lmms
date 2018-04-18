@@ -4,18 +4,28 @@
 	<div class="page-header">
 		<h1>Summary</h1>
 	</div>
+	<div class="row">
+	<div class="col-sm-6"><img src="/static/outputfile.png" alt="Pie Chart"></div>
+	<div class="col-sm-6">
+	<table class="table">
+	<tbody>	
 	{{range $n := .items}}
-		<div class="panel panel-default">
-			<div class="panel-body">
-				<p>Date: {{.SnapshotDate_Formatted}}</p>
-				<p>Cash: {{.Cash_String}}</p>
-				<p>Load: {{.Loads_String}}</p>
-				<p>SmartMoney: {{.SmartMoney_String}}</p>
-				<p>Codes: {{.Codes_String}}</p>
-				<p>Total: {{.Total_String}}</p>
-			</div>
-		</div>
-	{{end}}	
+		<!-- <div class="panel panel-default">
+			<div class="panel-body"> -->
+				<tr><td>Date: </td><td><strong>{{.SnapshotDate_Formatted}}</strong></td></tr>
+				<tr><td>Cash: </td><td><strong>{{.Cash_String}}</strong></td></tr>
+				<tr><td>Load: </td><td><strong>{{.Loads_String}}</strong></td></tr>
+				<tr><td>SmartMoney: </td><td><strong>{{.SmartMoney_String}}</strong></td></tr>
+				<tr><td>Codes: </td><td><strong>{{.Codes_String}}</strong></td></tr>
+				<tr><td>Total: </td><td><strong>{{.Total_String}}</strong></td></tr>
+
+	<!--		</div>
+		</div> -->
+	{{end}}
+	</tbody>
+	</table>
+	</div>	
+	</div>
 	{{template "footer" .}}
 {{end}}
 {{define "foot"}}{{end}}
