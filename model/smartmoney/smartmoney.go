@@ -177,11 +177,10 @@ func EncashSmartMoney(db Connection, trans_date string, amount string, details s
 	//cash_details = cash_details + transactiontag
 	result, err = db.Exec(fmt.Sprintf(`
 		INSERT INTO %v
-		(trans_datetime,trans_code,amount,details)
+		(trans_datetime,trans_code,amount,fee,details)
 		VALUES
-		(?,?,?,?)
-		`, cashtable), trans_date, trans_code,
-		fee, cash_details)
+		(?,?,?,?,?)
+		`, cashtable), trans_date, trans_code,fee,1,cash_details)
 	if err != nil {
 		return result, err
 	}
