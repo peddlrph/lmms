@@ -221,11 +221,11 @@ func Load2Muni(db Connection, trans_date string, amount string, details string) 
 
 	result, err = db.Exec(fmt.Sprintf(`
 		INSERT INTO %v
-		(trans_datetime,trans_code,amount,details)
+		(trans_datetime,trans_code,amount,fee,details)
 		VALUES
-		(?,?,?,?)
+		(?,?,?,?,?)
 		`, loadstable), trans_date, trans_code,
-		fee, loads_details)
+		fee, 1,loads_details)
 	if err != nil {
 		return result, err
 	}
@@ -283,11 +283,11 @@ func Load2Brgy(db Connection, trans_date string, amount string, details string) 
 
 	result, err = db.Exec(fmt.Sprintf(`
 		INSERT INTO %v
-		(trans_datetime,trans_code,amount,details)
+		(trans_datetime,trans_code,amount,fee,details)
 		VALUES
-		(?,?,?,?)
+		(?,?,?,?,?)
 		`, loadstable), trans_date, trans_code,
-		fee, loads_details)
+		fee,1, loads_details)
 	if err != nil {
 		return result, err
 	}
@@ -345,11 +345,11 @@ func Load2Dealer(db Connection, trans_date string, amount string, details string
 
 	result, err = db.Exec(fmt.Sprintf(`
 		INSERT INTO %v
-		(trans_datetime,trans_code,amount,details)
+		(trans_datetime,trans_code,amount,fee,details)
 		VALUES
-		(?,?,?,?)
+		(?,?,?,?,?)
 		`, loadstable), trans_date, trans_code,
-		fee, loads_details)
+		fee, 1,loads_details)
 	if err != nil {
 		return result, err
 	}
