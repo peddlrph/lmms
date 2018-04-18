@@ -152,7 +152,7 @@ func Code2Muni(db Connection, trans_date string, codecount string, details strin
 	amount := strconv.FormatInt(3698*cnt, 10)
 	amt, _ := strconv.ParseFloat(amount, 64)
 
-	fmt.Println(cnt)
+	//fmt.Println(cnt)
 
 	fee := 100.00 * cnt
 
@@ -204,11 +204,11 @@ func Code2Muni(db Connection, trans_date string, codecount string, details strin
 
 	result, err = db.Exec(fmt.Sprintf(`
 		INSERT INTO %v
-		(trans_datetime,trans_code,amount,details)
+		(trans_datetime,trans_code,amount,fee,details)
 		VALUES
-		(?,?,?,?)
+		(?,?,?,?,?)
 		`, cashtable), trans_date, trans_code,
-		fee, cash_details)
+		fee,1, cash_details)
 	if err != nil {
 		return result, err
 	}
@@ -277,11 +277,11 @@ func Code2Brgy(db Connection, trans_date string, codecount string, details strin
 
 	result, err = db.Exec(fmt.Sprintf(`
 		INSERT INTO %v
-		(trans_datetime,trans_code,amount,details)
+		(trans_datetime,trans_code,amount,fee,details)
 		VALUES
-		(?,?,?,?)
+		(?,?,?,?,?)
 		`, cashtable), trans_date, trans_code,
-		fee, cash_details)
+		fee, 1,cash_details)
 	if err != nil {
 		return result, err
 	}
@@ -344,11 +344,11 @@ func Code2Dealer(db Connection, trans_date string, codecount string, details str
 
 	result, err = db.Exec(fmt.Sprintf(`
 		INSERT INTO %v
-		(trans_datetime,trans_code,amount,details)
+		(trans_datetime,trans_code,amount,fee,details)
 		VALUES
-		(?,?,?,?)
+		(?,?,?,?,?)
 		`, cashtable), trans_date, trans_code,
-		fee, cash_details)
+		fee, 1,cash_details)
 	if err != nil {
 		return result, err
 	}
