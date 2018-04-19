@@ -1,8 +1,8 @@
-{{define "title"}}SmartMoney{{end}}
+{{define "title"}}SmartMoney/SmartPadala{{end}}
 {{define "head"}}{{end}}
 {{define "content"}}
 	<div class="page-header">
-		<h1>SmartMoney</h1>
+		<h1>SmartMoney / SmartPadala</h1>
 	</div>
 	<div class="container">
 	<p>
@@ -11,6 +11,12 @@
 		</a>
 		<a title="Add" class="btn btn-primary" role="button" href="{{$.CurrentURI}}/encashsmartmoney">
 			<span class="glyphicon glyphicon-plus" aria-hidden="true"></span> EncashSmartMoney
+		</a>
+		<a title="Add" class="btn btn-primary" role="button" href="{{$.BaseURI}}smartpadala/receivesp">
+			<span class="glyphicon glyphicon-plus" aria-hidden="true"></span> ReceiveSP
+		</a>
+		<a title="Add" class="btn btn-primary" role="button" href="{{$.BaseURI}}smartpadala/sendsp">  
+			<span class="glyphicon glyphicon-plus" aria-hidden="true"></span> SendSP
 		</a>
 	</p>
 	<table class="table"><thead>
