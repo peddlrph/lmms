@@ -92,7 +92,7 @@ func Create(db Connection, name string) (sql.Result, error) {
 func ReceiveSP(db Connection, trans_date string, amount string, details string) (sql.Result, error) {
 	amt, _ := strconv.ParseFloat(amount, 64)
 
-	fee := get_receivefee(amt, 1000, 9.5)
+	fee := get_receivefee(amt, 1000, 11.5)
 	fee_string := fmt.Sprintf("%.2f", fee)
 
 	trans_code := "ReceiveSP"
@@ -179,16 +179,20 @@ func ReceiveSP(db Connection, trans_date string, amount string, details string) 
 func SendSP(db Connection, trans_date string, amount string, details string) (sql.Result, error) {
 	amt, _ := strconv.ParseFloat(amount, 64)
 
-	fee := get_sendfee(amt, 1000, 11.5)
+	_, fee2sender, fee2receiver := get_sendfees(amt)
 
-	fee_string := fmt.Sprintf("%.2f", fee)
+	//fee_string := fmt.Sprintf("%.2f", fee)
+	fee2sender_string := fmt.Sprintf("%.2f", fee2sender)
+	fee2receiver_string := fmt.Sprintf("%.2f", fee2receiver)
 
 	trans_code := "SendSP"
 
 	trans_details := "SendSP: |"
 	trans_details = trans_details + "-  Subtract " + amount + " from smartmoney.|"
 	trans_details = trans_details + "-  Add " + amount + " to cash.|"
-	trans_details = trans_details + "-  Add " + fee_string + " to smartmoney as fee.|"
+	trans_details = trans_details + "-  Add " + fee2sender_string + " to cash as fee.|"
+	trans_details = trans_details + "-  Subtract " + fee2receiver_string + " from smartmoney. Fee to Smart and Receiver.|"
+	trans_details = trans_details + "-  Add " + fee2receiver_string + " to cash. Fee to Smart and Receiver.|"
 	trans_details = trans_details + "Details: " + details
 	result, err := db.Exec(fmt.Sprintf(`
 		INSERT INTO %v
@@ -219,10 +223,10 @@ func SendSP(db Connection, trans_date string, amount string, details string) (sq
 	sm_details = sm_details + transactiontag
 	result, err = db.Exec(fmt.Sprintf(`
 		INSERT INTO %v
-		(trans_datetime,amount,details)
+		(trans_datetime,trans_code,amount,details)
 		VALUES
-		(?,?,?)
-		`, smartmoneytable), trans_date,
+		(?,?,?,?)
+		`, smartmoneytable), trans_date, trans_code,
 		amt*(-1), sm_details)
 	if err != nil {
 		return result, err
@@ -234,7 +238,24 @@ func SendSP(db Connection, trans_date string, amount string, details string) (sq
 		VALUES
 		(?,?,?,?,?)
 		`, cashtable), trans_date, trans_code,
-		fee, 1, sm_details)
+		fee2sender, 1, cash_details)
+
+	result, err = db.Exec(fmt.Sprintf(`
+		INSERT INTO %v
+		(trans_datetime,trans_code,amount,details)
+		VALUES
+		(?,?,?,?)
+		`, cashtable), trans_date, trans_code,
+		fee2receiver, cash_details)
+
+	result, err = db.Exec(fmt.Sprintf(`
+		INSERT INTO %v
+		(trans_datetime,trans_code,amount,details)
+		VALUES
+		(?,?,?,?)
+		`, smartmoneytable), trans_date, trans_code,
+		fee2receiver*(-1), sm_details)
+
 	/*
 		sp_details := "SendSP: |"
 		sp_details = sp_details + "Details: " + details + "|"
@@ -260,52 +281,6 @@ func SendSP(db Connection, trans_date string, amount string, details string) (sq
 	if err != nil {
 		return result, err
 	}
-	return result, err
-}
-
-func SendSPX(db Connection, trans_date string, amount string, details string) (sql.Result, error) {
-	amt, _ := strconv.ParseFloat(amount, 64)
-	trans_details := details + " SendSP: "
-	result, err := db.Exec(fmt.Sprintf(`
-		INSERT INTO %v
-		(trans_datetime,amount,details)
-		VALUES
-		(?,?,?)
-		`, cashtable), trans_date,
-		amt, details)
-	trans_details = trans_details + "Add " + amount + " to cash."
-	result, err = db.Exec(fmt.Sprintf(`
-		INSERT INTO %v
-		(trans_datetime,amount,details)
-		VALUES
-		(?,?,?)
-		`, smartmoneytable), trans_date,
-		amt*(-1), details)
-	trans_details = trans_details + " Subtract " + amount + " from smartmoney."
-	fee_rate := get_fee_rate("ReceiveSP")
-	fee := fmt.Sprintf("%.2f", amt*fee_rate)
-	result, err = db.Exec(fmt.Sprintf(`
-		INSERT INTO %v
-		(trans_datetime,amount,details)
-		VALUES
-		(?,?,?)
-		`, cashtable), trans_date,
-		fee, details)
-	trans_details = trans_details + " Add " + fee + " to cash as fee."
-	result, err = db.Exec(fmt.Sprintf(`
-		INSERT INTO %v
-		(trans_datetime,amount,details)
-		VALUES
-		(?,?,?)
-		`, transtable), trans_date,
-		amt, trans_details)
-	result, err = db.Exec(fmt.Sprintf(`
-		INSERT INTO %v
-		(trans_datetime,amount,details)
-		VALUES
-		(?,?,?)
-		`, table), trans_date,
-		amt, trans_details)
 	return result, err
 }
 
@@ -384,16 +359,19 @@ func get_receivefee(amt float64, unit float64, per_unit_rate float64) float64 {
 
 }
 
-func get_sendfee(amt float64, unit float64, per_unit_rate float64) float64 {
+func get_sendfees(amt float64) (float64, float64, float64) {
 
-	fee_cnt := math.Ceil(amt / unit)
+	fee_cnt := math.Ceil(amt / 1000)
+	fee := fee_cnt * 30
+	fee2sender := fee_cnt * 9.5
+	fee2receiver := fee_cnt * (30 - 9.5)
 
 	//fmt.Println(math.Ceil(fee_cnt))
 	//fmt.Println(math.Ceil(fee_cnt))
 	//fmt.Println(math.Mod(amt, unit))
 
 	//if math.Mod(amt, unit) > 0 {
-	return fee_cnt * per_unit_rate
+	return fee, fee2sender, fee2receiver
 	//} else {
 	//	return fee_cnt * per_unit_rate
 	//}
