@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS `transaction` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `trans_datetime` datetime NOT NULL,
   `amount` decimal(10,2) NOT NULL,
-  `details` varchar(200) DEFAULT NULL,
+  `details` varchar(500) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
