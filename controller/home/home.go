@@ -18,10 +18,10 @@ func Load() {
 func Index(w http.ResponseWriter, r *http.Request) {
 	c := flight.Context(w, r)
 
-	v := c.View.New("home/index")
-	if c.Sess.Values["id"] != nil {
-		v.Vars["first_name"] = c.Sess.Values["first_name"]
-	}
+	v := c.View.New("transaction/index")
+	//if c.Sess.Values["id"] != nil {
+	//	v.Vars["first_name"] = c.Sess.Values["first_name"]
+	//}
 
 	v.Render(w, r)
 }
