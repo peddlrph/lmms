@@ -10,7 +10,10 @@ import (
 
 var (
 	// table is the table name.
-	table = "summary"
+	table           = "summary"
+	cashtable       = "cash"
+	loadstable      = "loads"
+	smartmoneytable = "smartmoney"
 )
 
 // Item defines the model.
@@ -28,6 +31,14 @@ type Item struct {
 	Codes_String           string
 	Total                  sql.NullFloat64 `db:"total"`
 	Total_String           string
+}
+
+type Earning struct {
+	Trans_Datetime           mysql.NullTime `db:"trans_datetime"`
+	Trans_Datetime_Formatted string
+	Trans_code               string
+	Amount                   sql.NullFloat64 `db:"amount"`
+	Amount_String            string
 }
 
 // Connection is an interface for making queries.
@@ -75,6 +86,22 @@ func All(db Connection) ([]Item, bool, error) {
 		FROM %v
 		`, table))
 	return result, err == sql.ErrNoRows, err
+}
+
+func DailyEarnings(db Connection) ([]Earning, bool, error) {
+	var result []Earning
+
+	//err := db.Select(&result, fmt.Sprintf(`select trans_datetime,trans_code, amount from cash where fee = TRUE`))
+
+	err := db.Select(&result, fmt.Sprintf(`select trans_datetime, trans_code,sum(amount) as amount from (select trans_datetime,trans_code, amount from %v where fee = TRUE and datediff(date(now()),date(trans_datetime)) < 11 	union all select trans_datetime,trans_code, amount from %v where fee = TRUE and datediff(date(now()),date(trans_datetime)) < 11  union all select trans_datetime,trans_code, amount from %v where fee = TRUE and datediff(date(now()),date(trans_datetime)) < 11) as allfees group by trans_datetime,trans_code order by trans_datetime desc,trans_code`,
+		cashtable, loadstable, smartmoneytable))
+
+	//fmt.Println(err)
+
+	//fmt.Println(result)
+
+	return result, err == sql.ErrNoRows, err
+
 }
 
 // Create adds an item.
