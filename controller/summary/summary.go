@@ -3,11 +3,11 @@ package summary
 
 import (
 	//"bytes"
-	//	"fmt"
 	"bufio"
-	"os"
-	//"io/ioutil"
+	//"fmt"
 	"net/http"
+	"os"
+	"time"
 
 	"github.com/blue-jay/blueprint/lib/flight"
 	"github.com/blue-jay/blueprint/middleware/acl"
@@ -56,6 +56,13 @@ func Index(w http.ResponseWriter, r *http.Request) {
 		items[i].Total_String = utilities.DisplayPrettyNullFloat64(items[i].Total)
 	}
 
+	daily_earnings, _, _ := summary.DailyEarnings(c.DB)
+
+	for i := 0; i < len(daily_earnings); i++ {
+		daily_earnings[i].Trans_Datetime_Formatted = daily_earnings[i].Trans_Datetime.Time.Format(defaultFormat)
+		daily_earnings[i].Amount_String = utilities.DisplayPrettyNullFloat64(daily_earnings[i].Amount)
+	}
+
 	//prettysum := utilities.DisplayPrettyFloat(sum)
 
 	pie := chart.PieChart{
@@ -87,9 +94,14 @@ func Index(w http.ResponseWriter, r *http.Request) {
 	//_ = ioutil.WriteFile(outputfile, buffer, 0644)
 	//check(err)
 
+	currentTime := time.Now()
+
 	v := c.View.New("summary/index")
 	v.Vars["items"] = items
-	v.Vars["buf"] = outputfile
+	v.Vars["today"] = currentTime.Format(defaultFormat)
+	//fmt.Println(daily_earnings)
+	//v.Vars["buf"] = outputfile
+	v.Vars["daily_earnings"] = daily_earnings
 	v.Render(w, r)
 }
 
