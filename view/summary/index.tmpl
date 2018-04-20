@@ -7,6 +7,7 @@
 	<div class="row">
 	<div class="col-sm-6"><img src="/static/outputfile.png" alt="Pie Chart"></div>
 	<div class="col-sm-6">
+	<h3>Assets</h3>
 	<table class="table">
 	<tbody>	
 	{{range $n := .items}}
@@ -24,8 +25,29 @@
 	{{end}}
 	</tbody>
 	</table>
-	</div>	
-	</div>
+	<h3>Daily Earnings</h3>
+	<table class="table">
+		<thead>
+    	<tr>
+        	<th>Date</th>
+        	<th>Trans_Code</th>
+        	<th>Earning</th>
+    	</tr>
+    </thead>
+	<tbody>	
+	{{ $today := .today}}
+	{{range $m := .daily_earnings}}
+		{{if ne $m.Trans_Datetime_Formatted $today}}
+				<tr><td>{{.Trans_Datetime_Formatted}}</td><td>{{.Trans_code}}</td><td>{{.Amount_String}}</td> </tr>
+		{{else}}
+				<tr><td>Today</td><td>{{.Trans_code}}</td><td>{{.Amount_String}}</td> </tr>
+		{{end}}
+	{{end}}
+	<!--		</div>
+		</div> -->
+	</tbody> 
+	</table>
+</div>
 	{{template "footer" .}}
 {{end}}
 {{define "foot"}}{{end}}
