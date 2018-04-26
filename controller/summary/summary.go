@@ -7,6 +7,7 @@ import (
 	//"fmt"
 	"net/http"
 	"os"
+	"sort"
 	"time"
 
 	"github.com/blue-jay/blueprint/lib/flight"
@@ -56,12 +57,20 @@ func Index(w http.ResponseWriter, r *http.Request) {
 		items[i].Total_String = utilities.DisplayPrettyNullFloat64(items[i].Total)
 	}
 
-	daily_earnings, _, _ := summary.DailyEarnings(c.DB)
+	daily_earnings, _, _ := summary.DailyEarnings(c.DB, "7")
+
+	m := make(map[string]float64)
+	n := make(map[string]float64)
 
 	for i := 0; i < len(daily_earnings); i++ {
 		daily_earnings[i].Trans_Datetime_Formatted = daily_earnings[i].Trans_Datetime.Time.Format(defaultFormat)
 		daily_earnings[i].Amount_String = utilities.DisplayPrettyNullFloat64(daily_earnings[i].Amount)
+
+		m[daily_earnings[i].Trans_Datetime.Time.Format("2006-01-02")] = m[daily_earnings[i].Trans_Datetime.Time.Format("2006-01-02")] + daily_earnings[i].Amount.Float64
+		n[daily_earnings[i].Trans_code] = n[daily_earnings[i].Trans_code] + daily_earnings[i].Amount.Float64
 	}
+
+	//fmt.Println(m)
 
 	//prettysum := utilities.DisplayPrettyFloat(sum)
 
@@ -79,6 +88,15 @@ func Index(w http.ResponseWriter, r *http.Request) {
 
 	outputfile := "./asset/static/outputfile.png"
 
+	pie2 := chart.PieChart{
+		Title:  "Summary",
+		Width:  512,
+		Height: 512,
+		Values: []chart.Value{},
+	}
+
+	//outputfile := "./asset/static/outputfile.png"
+
 	//buffer := []byte{}
 
 	f, _ := os.Create(outputfile)
@@ -91,8 +109,106 @@ func Index(w http.ResponseWriter, r *http.Request) {
 
 	writer.Flush()
 
-	//_ = ioutil.WriteFile(outputfile, buffer, 0644)
-	//check(err)
+	sbc := chart.BarChart{
+		Title:      "Daily Total Earnings",
+		TitleStyle: chart.StyleShow(),
+		Background: chart.Style{
+			Padding: chart.Box{
+				Top: 40,
+			},
+		},
+		Height:   512,
+		BarWidth: 60,
+		XAxis: chart.Style{
+			Show: true,
+		},
+		YAxis: chart.YAxis{
+			Style: chart.Style{
+				Show: true,
+			},
+		},
+		Bars: []chart.Value{},
+	}
+
+	//vBars := sbc.Bars
+	idx := 0
+	// fmt.Println("Length of m:", len(m))
+	slice := make([]chart.Value, len(m))
+
+	slice1 := make([]summary.Earning, len(m))
+	//fmt.Println("Arr:", slice)
+	for k, v := range m {
+
+		//		fmt.Println(k, v)
+		//fmt.Printf("type: %T\n", sbc.Bars)
+		slice[idx].Label = k
+		slice[idx].Value = v
+
+		slice1[idx].Trans_Datetime_Formatted = k
+		slice1[idx].Amount_String = utilities.DisplayPrettyFloat64(v)
+
+		idx++
+	}
+
+	sort.Slice(slice, func(i, j int) bool { return slice[i].Label < slice[j].Label })
+
+	sbc.Bars = slice
+
+	outputfile2 := "./asset/static/outputfile2.png"
+
+	//buffer := []byte{}
+
+	f2, _ := os.Create(outputfile2)
+
+	writer2 := bufio.NewWriter(f2)
+
+	defer f2.Close()
+
+	_ = sbc.Render(chart.PNG, writer2)
+
+	writer2.Flush()
+
+	idx2 := 0
+
+	slice2 := make([]chart.Value, len(n))
+
+	//make([]summary.Earning, len(n))
+
+	slice3 := make([]summary.Earning, len(n))
+	//fmt.Println("Arr:", slice)
+	for k, v := range n {
+		//sbc.Bars[idx].Label = k
+		//sbc.Bars[idx].Value = v
+
+		//		fmt.Println(k, v)
+		//fmt.Printf("type: %T\n", sbc.Bars)
+		slice2[idx2].Label = k
+		slice2[idx2].Value = v
+
+		slice3[idx2].Trans_code = k
+		slice3[idx2].Amount_String = utilities.DisplayPrettyFloat64(v)
+
+		idx2++
+	}
+
+	pie2.Values = slice2
+
+	outputfile3 := "./asset/static/outputfile3.png"
+
+	f3, _ := os.Create(outputfile3)
+
+	writer3 := bufio.NewWriter(f3)
+
+	defer f3.Close()
+
+	_ = pie2.Render(chart.PNG, writer3)
+
+	writer3.Flush()
+
+	//fmt.Println(n)
+
+	//	fmt.Println(daily_earnings)
+	//	fmt.Println(slice3)
 
 	currentTime := time.Now()
 
@@ -101,7 +217,9 @@ func Index(w http.ResponseWriter, r *http.Request) {
 	v.Vars["today"] = currentTime.Format(defaultFormat)
 	//fmt.Println(daily_earnings)
 	//v.Vars["buf"] = outputfile
-	v.Vars["daily_earnings"] = daily_earnings
+	//v.Vars["daily_earnings"] = daily_earnings
+	v.Vars["daily_earnings"] = slice1
+	v.Vars["earnings_by_transcode"] = slice3
 	v.Render(w, r)
 }
 
