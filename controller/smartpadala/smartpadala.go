@@ -16,7 +16,8 @@ import (
 )
 
 var (
-	uri = "/smartpadala"
+	uri    = "/smartpadala"
+	sm_uri = "/smartmoney"
 )
 
 // Load the routes.
@@ -105,7 +106,7 @@ func ReceiveSPSave(w http.ResponseWriter, r *http.Request) {
 	}
 
 	c.FlashSuccess("Item added.")
-	c.Redirect(uri)
+	c.Redirect(sm_uri)
 }
 
 func SendSPSave(w http.ResponseWriter, r *http.Request) {
@@ -125,7 +126,7 @@ func SendSPSave(w http.ResponseWriter, r *http.Request) {
 	}
 
 	c.FlashSuccess("Item added.")
-	c.Redirect(uri)
+	c.Redirect(sm_uri)
 }
 
 // Store handles the create form submission.
