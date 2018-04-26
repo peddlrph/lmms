@@ -19,18 +19,14 @@
 				<tr><td>SmartMoney: </td><td><strong>{{.SmartMoney_String}}</strong></td></tr>
 				<tr><td>Codes: </td><td><strong>{{.Codes_String}}</strong></td></tr>
 				<tr><td>Total: </td><td><strong>{{.Total_String}}</strong></td></tr>
-
-	<!--		</div>
-		</div> -->
 	{{end}}
 	</tbody>
 	</table>
-	<h3>Daily Earnings</h3>
+	<h3>Daily Earnings Per Transaction Code</h3>
 	<table class="table">
 		<thead>
     	<tr>
         	<th>Date</th>
-        	<th>Trans_Code</th>
         	<th>Earning</th>
     	</tr>
     </thead>
@@ -38,16 +34,59 @@
 	{{ $today := .today}}
 	{{range $m := .daily_earnings}}
 		{{if ne $m.Trans_Datetime_Formatted $today}}
-				<tr><td>{{.Trans_Datetime_Formatted}}</td><td>{{.Trans_code}}</td><td>{{.Amount_String}}</td> </tr>
+				<tr><td>{{.Trans_Datetime_Formatted}}</td><td>{{.Amount_String}}</td> </tr>
 		{{else}}
-				<tr><td>Today</td><td>{{.Trans_code}}</td><td>{{.Amount_String}}</td> </tr>
+				<tr><td>Today</td><td>{{.Amount_String}}</td> </tr>
 		{{end}}
 	{{end}}
-	<!--		</div>
-		</div> -->
 	</tbody> 
 	</table>
-</div>
+
+	</div>
+	</div>
+	<div class="row">
+	<div class="col-sm-6"><img src="/static/outputfile2.png" alt="Pie Chart"></div>
+	<div class="col-sm-6">		
+	</div>
+	</div>
+	<div class="row">
+	<div class="col-sm-6"><img src="/static/outputfile3.png" alt="Pie Chart"></div>
+	<div class="col-sm-6">
+	<h3>Earnings Per Transaction Code for Past 7 days</h3>
+	<table class="table">
+		<thead>
+    	<tr>
+        	<th>Trans_Code</th>
+        	<th>Total Earnings</th>
+    	</tr>
+    </thead>
+	<tbody>	
+	{{range $o := .earnings_by_transcode}}
+				<tr><td>{{.Trans_code}}</td><td>{{.Amount_String}}</td> </tr>
+	{{end}}
+	</tbody> 
+	</table> 
+	
+	</div>
+	</div>
+<!--
+<img src="/static/outputfile2.png" alt="Bar Chart">
+<img src="/static/outputfile3.png" alt="Pie Chart">
+<h3>Earnings Per Transaction Code for Past 7 days</h3>
+	<table class="table">
+		<thead>
+    	<tr>
+        	<th>Trans_Code</th>
+        	<th>Total Earnings</th>
+    	</tr>
+    </thead>
+	<tbody>	
+	{{range $o := .earnings_by_transcode}}
+				<tr><td>{{.Trans_code}}</td><td>{{.Amount_String}}</td> </tr>
+	{{end}}
+	</tbody> 
+	</table> 
+-->
 	{{template "footer" .}}
 {{end}}
 {{define "foot"}}{{end}}
