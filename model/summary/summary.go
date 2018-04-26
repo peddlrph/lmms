@@ -88,13 +88,13 @@ func All(db Connection) ([]Item, bool, error) {
 	return result, err == sql.ErrNoRows, err
 }
 
-func DailyEarnings(db Connection) ([]Earning, bool, error) {
+func DailyEarnings(db Connection, rec_count string) ([]Earning, bool, error) {
 	var result []Earning
 
 	//err := db.Select(&result, fmt.Sprintf(`select trans_datetime,trans_code, amount from cash where fee = TRUE`))
 
-	err := db.Select(&result, fmt.Sprintf(`select trans_datetime, trans_code,sum(amount) as amount from (select trans_datetime,trans_code, amount from %v where fee = TRUE and datediff(date(now()),date(trans_datetime)) < 11 	union all select trans_datetime,trans_code, amount from %v where fee = TRUE and datediff(date(now()),date(trans_datetime)) < 11  union all select trans_datetime,trans_code, amount from %v where fee = TRUE and datediff(date(now()),date(trans_datetime)) < 11) as allfees group by trans_datetime,trans_code order by trans_datetime desc,trans_code`,
-		cashtable, loadstable, smartmoneytable))
+	err := db.Select(&result, fmt.Sprintf(`select trans_datetime, trans_code,sum(amount) as amount from (select trans_datetime,trans_code, amount from %v where fee = TRUE and datediff(date(now()),date(trans_datetime)) < %v 	union all select trans_datetime,trans_code, amount from %v where fee = TRUE and datediff(date(now()),date(trans_datetime)) < %v  union all select trans_datetime,trans_code, amount from %v where fee = TRUE and datediff(date(now()),date(trans_datetime)) < %v) as allfees group by trans_datetime,trans_code order by trans_datetime desc,trans_code`,
+		cashtable, rec_count, loadstable, rec_count, smartmoneytable, rec_count))
 
 	//fmt.Println(err)
 
