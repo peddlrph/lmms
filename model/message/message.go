@@ -64,7 +64,14 @@ func All(db Connection) ([]Message, Message, error) {
 
 	mobile_ip, _, _ := mobile_ip.ByID(db, "1")
 
-	response, err := smsgateway.GetMessages("http://" + mobile_ip.IP_Address + ":8080/v1/sms/?limit=20")
+	response, err := smsgateway.GetMessages("http://" + mobile_ip.IP_Address + ":8080/v1/sms/?limit=10000")
+	if err == nil {
+		//fmt.Println("yeah")
+		smsgateway.WriteMessagesToFile(response)
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
 
 	mesgs := Item{}
 	json.Unmarshal([]byte(response), &mesgs)
