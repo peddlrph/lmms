@@ -29,6 +29,8 @@ func Load() {
 	router.Post(uri+"/smartmoneywithcash", SmartMoneyWithCashSave, c...)
 	router.Get(uri+"/encashsmartmoney", EncashSmartMoney, c...)
 	router.Post(uri+"/encashsmartmoney", EncashSmartMoneySave, c...)
+	router.Get(uri+"/transfertovirtual", TransferToVirtual, c...)
+	router.Post(uri+"/transfertovirtual", TransferToVirtualSave, c...)
 	router.Get(uri+"/view/:id", Show, c...)
 	router.Get(uri+"/edit/:id", Edit, c...)
 	router.Patch(uri+"/edit/:id", Update, c...)
@@ -120,6 +122,36 @@ func EncashSmartMoneySave(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_, err := smartmoney.EncashSmartMoney(c.DB, r.FormValue("trans_datetime"), r.FormValue("amount"), r.FormValue("details"))
+	if err != nil {
+		c.FlashErrorGeneric(err)
+		Create(w, r)
+		return
+	}
+
+	c.FlashSuccess("Item added.")
+	c.Redirect(uri)
+}
+
+func TransferToVirtual(w http.ResponseWriter, r *http.Request) {
+	c := flight.Context(w, r)
+	now := time.Now()
+
+	v := c.View.New("smartmoney/transfertovirtual")
+	v.Vars["curdate"] = now.Format("2006-01-02")
+	//c.Repopulate(v.Vars, "amount")
+	v.Render(w, r)
+}
+
+func TransferToVirtualSave(w http.ResponseWriter, r *http.Request) {
+	c := flight.Context(w, r)
+
+	if !utilities.IsNumeric(r.FormValue("amount")) {
+		c.FlashNotice("Enter valid amount")
+		Create(w, r)
+		return
+	}
+
+	_, err := smartmoney.TransferToVirtual(c.DB, r.FormValue("trans_datetime"), r.FormValue("amount"), r.FormValue("details"))
 	if err != nil {
 		c.FlashErrorGeneric(err)
 		Create(w, r)
