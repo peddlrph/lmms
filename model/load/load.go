@@ -308,7 +308,7 @@ func Load2Brgy(db Connection, trans_date string, amount string, details string) 
 func Load2Dealer(db Connection, trans_date string, amount string, details string) (sql.Result, error) {
 	amt, _ := strconv.ParseFloat(amount, 64)
 
-	fee := fmt.Sprintf("%.2f", amt*(0.03))
+	fee := fmt.Sprintf("%.2f", amt*(0.015))
 
 	trans_code := "Load2Dealer"
 	trans_details := "Load2Dealer: |"
