@@ -180,7 +180,7 @@ func EncashSmartMoney(db Connection, trans_date string, amount string, details s
 		(trans_datetime,trans_code,amount,fee,details)
 		VALUES
 		(?,?,?,?,?)
-		`, cashtable), trans_date, trans_code,fee,1,cash_details)
+		`, cashtable), trans_date, trans_code, fee, 1, cash_details)
 	if err != nil {
 		return result, err
 	}
@@ -195,6 +195,73 @@ func EncashSmartMoney(db Connection, trans_date string, amount string, details s
 		(?,?,?,?)
 		`, smartmoneytable), trans_date, trans_code,
 		amt, sm_details)
+	return result, err
+}
+
+func TransferToVirtual(db Connection, trans_date string, amount string, details string) (sql.Result, error) {
+	amt, _ := strconv.ParseFloat(amount, 64)
+
+	fee := fmt.Sprintf("%.2f", amt*(0.005))
+
+	trans_code := "TransferToVirtual"
+
+	trans_details := "TransferToVirtual: |"
+	trans_details = trans_details + "-  Subtract " + amount + " from smartmoney.|"
+	trans_details = trans_details + "-  Add " + amount + " to cash.|"
+	trans_details = trans_details + "-  Add " + fee + " to cash.|"
+	trans_details = trans_details + "Details: " + details
+	result, err := db.Exec(fmt.Sprintf(`
+		INSERT INTO %v
+		(trans_datetime,amount,details)
+		VALUES
+		(?,?,?)
+		`, transtable), trans_date,
+		amt, trans_details)
+	if err != nil {
+		return result, err
+	}
+	trans_id, _ := result.LastInsertId()
+	transactiontag := " Trans#: " + strconv.FormatInt(trans_id, 10)
+
+	cash_details := "TransferToVirtual: |"
+	cash_details = cash_details + details + "|"
+	cash_details = cash_details + transactiontag
+	result, err = db.Exec(fmt.Sprintf(`
+		INSERT INTO %v
+		(trans_datetime,trans_code,amount,details)
+		VALUES
+		(?,?,?,?)
+		`, cashtable), trans_date, trans_code,
+		amt, cash_details)
+	if err != nil {
+		return result, err
+	}
+
+	sm_details := "TransferToVirtual: |"
+	sm_details = sm_details + "Details: " + details + "|"
+	sm_details = sm_details + transactiontag
+	result, err = db.Exec(fmt.Sprintf(`
+		INSERT INTO %v
+		(trans_datetime,trans_code,amount,details)
+		VALUES
+		(?,?,?,?)
+		`, smartmoneytable), trans_date, trans_code,
+		amt*(-1), sm_details)
+
+	cash_details = "TransferToVirtual: |"
+	cash_details = cash_details + details + "|"
+	cash_details = cash_details + transactiontag
+	result, err = db.Exec(fmt.Sprintf(`
+		INSERT INTO %v
+		(trans_datetime,trans_code,amount,details)
+		VALUES
+		(?,?,?,?)
+		`, cashtable), trans_date, trans_code,
+		fee, cash_details)
+	if err != nil {
+		return result, err
+	}
+
 	return result, err
 }
 
