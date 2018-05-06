@@ -151,7 +151,7 @@ func TransferToVirtualSave(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err := smartmoney.TransferToVirtual(c.DB, r.FormValue("trans_datetime"), r.FormValue("amount"), r.FormValue("details"))
+	_, err := smartmoney.TransferToVirtual(c.DB, r.FormValue("trans_datetime"), r.FormValue("amount"), r.FormValue("nofee"), r.FormValue("details"))
 	if err != nil {
 		c.FlashErrorGeneric(err)
 		Create(w, r)
