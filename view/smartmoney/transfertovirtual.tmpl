@@ -8,13 +8,14 @@
 	<form method="post" action="{{$.CurrentURI}}">
 		<div class="form-group">
 			<label for="trans_datetime">Date</label>
-			<div><input type="date" class="form-control" id="trans_datetime" name="trans_datetime" size="10" value={{.curdate}} /></input></div>
+			<div><input type="date" class="form-control" id="trans_datetime" name="trans_datetime" size="10" value={{.curdate}} /></input>
+			</div>
 			<label for="amount">Amount</label>
-			<div><input type="text" class="form-control" id="amount" name="amount" size="10" placeholder="Amount" /></input></div>
+			<div><input type="text" class="form-control" id="amount" name="amount" size="10" placeholder="Amount" /></div>
 			<label for="details">Details</label>
 			<div><textarea rows="5" class="form-control" id="details" name="details" placeholder="Type your text here..." />{{TEXTAREA "name" .item.Details .}}</textarea></div>
 		</div>
-		<p>{{.curdate}}</p>
+		<p>No Fee <input type="checkbox" id="nofee" name="nofee" value="True"></input></p>
 		<button type="submit" class="btn btn-success" title="Save" />
 			<span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Save
 		</button>
