@@ -198,10 +198,15 @@ func EncashSmartMoney(db Connection, trans_date string, amount string, details s
 	return result, err
 }
 
-func TransferToVirtual(db Connection, trans_date string, amount string, details string) (sql.Result, error) {
+func TransferToVirtual(db Connection, trans_date string, amount string, nofee string, details string) (sql.Result, error) {
 	amt, _ := strconv.ParseFloat(amount, 64)
+	var fee string
 
-	fee := fmt.Sprintf("%.2f", amt*(0.005))
+	if nofee == "True" {
+		fee = "0.00"
+	} else {
+		fee = fmt.Sprintf("%.2f", amt*(0.005))
+	}
 
 	trans_code := "TransferToVirtual"
 
