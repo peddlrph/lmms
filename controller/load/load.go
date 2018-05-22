@@ -177,16 +177,16 @@ func ReplenishWithSMSave(w http.ResponseWriter, r *http.Request) {
 func Load2MuniSave(w http.ResponseWriter, r *http.Request) {
 	c := flight.Context(w, r)
 
-	if !utilities.IsNumeric(r.FormValue("amount")) {
-		c.FlashNotice("Enter valid amount")
-		Create(w, r)
+	if !utilities.IsNumeric(r.FormValue("amount")) || !utilities.IsMobileNumber(r.FormValue("mobile_number")) {
+		c.FlashNotice("Enter valid entries")
+		Load2Muni(w, r)
 		return
 	}
 
-	_, err := load.Load2Muni(c.DB, r.FormValue("trans_datetime"), r.FormValue("amount"), r.FormValue("details"))
+	_, err := load.Load2Muni(c.DB, r.FormValue("trans_datetime"), r.FormValue("amount"), r.FormValue("mobile_number"), r.FormValue("details"))
 	if err != nil {
 		c.FlashErrorGeneric(err)
-		Create(w, r)
+		Load2Muni(w, r)
 		return
 	}
 
@@ -197,16 +197,16 @@ func Load2MuniSave(w http.ResponseWriter, r *http.Request) {
 func Load2BrgySave(w http.ResponseWriter, r *http.Request) {
 	c := flight.Context(w, r)
 
-	if !utilities.IsNumeric(r.FormValue("amount")) {
-		c.FlashNotice("Enter valid amount")
-		Create(w, r)
+	if !utilities.IsNumeric(r.FormValue("amount")) || !utilities.IsMobileNumber(r.FormValue("mobile_number")) {
+		c.FlashNotice("Enter valid entries")
+		Load2Brgy(w, r)
 		return
 	}
 
-	_, err := load.Load2Brgy(c.DB, r.FormValue("trans_datetime"), r.FormValue("amount"), r.FormValue("details"))
+	_, err := load.Load2Brgy(c.DB, r.FormValue("trans_datetime"), r.FormValue("amount"), r.FormValue("mobile_number"), r.FormValue("details"))
 	if err != nil {
 		c.FlashErrorGeneric(err)
-		Create(w, r)
+		Load2Brgy(w, r)
 		return
 	}
 
@@ -217,16 +217,16 @@ func Load2BrgySave(w http.ResponseWriter, r *http.Request) {
 func Load2DealerSave(w http.ResponseWriter, r *http.Request) {
 	c := flight.Context(w, r)
 
-	if !utilities.IsNumeric(r.FormValue("amount")) {
-		c.FlashNotice("Enter valid amount")
-		Create(w, r)
+	if !utilities.IsNumeric(r.FormValue("amount")) || !utilities.IsMobileNumber(r.FormValue("mobile_number")) {
+		c.FlashNotice("Enter valid entries")
+		Load2Dealer(w, r)
 		return
 	}
 
-	_, err := load.Load2Dealer(c.DB, r.FormValue("trans_datetime"), r.FormValue("amount"), r.FormValue("details"))
+	_, err := load.Load2Dealer(c.DB, r.FormValue("trans_datetime"), r.FormValue("amount"), r.FormValue("mobile_number"), r.FormValue("details"))
 	if err != nil {
 		c.FlashErrorGeneric(err)
-		Create(w, r)
+		Load2Dealer(w, r)
 		return
 	}
 
