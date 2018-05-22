@@ -30,7 +30,7 @@
     	<tr>
         	<th>Transaction Date</th>
         	<th>TransCode</th>
-        <!--	<th>Mobile</th> -->
+        	<th>Mobile</th> 
         	<th>Details</th>
         	<th>Amount</th>
         	<th>Actions</th>
@@ -38,6 +38,7 @@
     </thead>
     <tbody>
     	<tr>
+    	<td></td>
     	<td></td>
     	<td style="text-align:right"><b>Total: </b></td>
 		<td><b>{{.sum}}</b></td>
@@ -47,7 +48,7 @@
 		<tr>
 		<td>{{.Trans_Datetime_Formatted}}</td>
 		<td>{{.Trans_Code.String}}</td>
-	<!--	<td>{{.Mobile_Number.String}}</td> -->
+		<td>{{.Mobile_Number.String}}</td>
 		<td>{{.Amount_String}}</td>
 		<td>
 		{{range $s := .Details_Split}}
