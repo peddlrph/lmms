@@ -181,7 +181,7 @@ func ReplenishWithSM(db Connection, trans_date string, amount string, details st
 	return result, err
 }
 
-func Load2Muni(db Connection, trans_date string, amount string, details string) (sql.Result, error) {
+func Load2Muni(db Connection, trans_date string, amount string, mobile_num string, details string) (sql.Result, error) {
 	amt, _ := strconv.ParseFloat(amount, 64)
 
 	fee := fmt.Sprintf("%.2f", amt*(0.01))
@@ -210,22 +210,22 @@ func Load2Muni(db Connection, trans_date string, amount string, details string) 
 	loads_details = loads_details + transactiontag
 	result, err = db.Exec(fmt.Sprintf(`
 		INSERT INTO %v
-		(trans_datetime,trans_code,amount,details)
+		(trans_datetime,trans_code,amount,mobile_number,details)
 		VALUES
-		(?,?,?,?)
+		(?,?,?,?,?)
 		`, loadstable), trans_date, trans_code,
-		amt*(-1), loads_details)
+		amt*(-1), mobile_num, loads_details)
 	if err != nil {
 		return result, err
 	}
 
 	result, err = db.Exec(fmt.Sprintf(`
 		INSERT INTO %v
-		(trans_datetime,trans_code,amount,fee,details)
+		(trans_datetime,trans_code,amount,mobile_number,fee,details)
 		VALUES
-		(?,?,?,?,?)
+		(?,?,?,?,?,?)
 		`, loadstable), trans_date, trans_code,
-		fee, 1,loads_details)
+		fee, mobile_num, 1, loads_details)
 	if err != nil {
 		return result, err
 	}
@@ -243,7 +243,7 @@ func Load2Muni(db Connection, trans_date string, amount string, details string) 
 	return result, err
 }
 
-func Load2Brgy(db Connection, trans_date string, amount string, details string) (sql.Result, error) {
+func Load2Brgy(db Connection, trans_date string, amount string, mobile_num string, details string) (sql.Result, error) {
 	amt, _ := strconv.ParseFloat(amount, 64)
 
 	fee := fmt.Sprintf("%.2f", amt*(0.0125))
@@ -272,22 +272,22 @@ func Load2Brgy(db Connection, trans_date string, amount string, details string) 
 	loads_details = loads_details + transactiontag
 	result, err = db.Exec(fmt.Sprintf(`
 		INSERT INTO %v
-		(trans_datetime,trans_code,amount,details)
+		(trans_datetime,trans_code,amount,mobile_number,details)
 		VALUES
-		(?,?,?,?)
+		(?,?,?,?,?)
 		`, loadstable), trans_date, trans_code,
-		amt*(-1), loads_details)
+		amt*(-1), mobile_num, loads_details)
 	if err != nil {
 		return result, err
 	}
 
 	result, err = db.Exec(fmt.Sprintf(`
 		INSERT INTO %v
-		(trans_datetime,trans_code,amount,fee,details)
+		(trans_datetime,trans_code,amount,mobile_number,fee,details)
 		VALUES
-		(?,?,?,?,?)
+		(?,?,?,?,?,?)
 		`, loadstable), trans_date, trans_code,
-		fee,1, loads_details)
+		fee, mobile_num, 1, loads_details)
 	if err != nil {
 		return result, err
 	}
@@ -305,7 +305,7 @@ func Load2Brgy(db Connection, trans_date string, amount string, details string) 
 	return result, err
 }
 
-func Load2Dealer(db Connection, trans_date string, amount string, details string) (sql.Result, error) {
+func Load2Dealer(db Connection, trans_date string, amount string, mobile_num string, details string) (sql.Result, error) {
 	amt, _ := strconv.ParseFloat(amount, 64)
 
 	fee := fmt.Sprintf("%.2f", amt*(0.015))
@@ -334,22 +334,22 @@ func Load2Dealer(db Connection, trans_date string, amount string, details string
 	loads_details = loads_details + transactiontag
 	result, err = db.Exec(fmt.Sprintf(`
 		INSERT INTO %v
-		(trans_datetime,trans_code,amount,details)
+		(trans_datetime,trans_code,amount,mobile_number,details)
 		VALUES
-		(?,?,?,?)
+		(?,?,?,?,?)
 		`, loadstable), trans_date, trans_code,
-		amt*(-1), loads_details)
+		amt*(-1), mobile_num, loads_details)
 	if err != nil {
 		return result, err
 	}
 
 	result, err = db.Exec(fmt.Sprintf(`
 		INSERT INTO %v
-		(trans_datetime,trans_code,amount,fee,details)
+		(trans_datetime,trans_code,amount,mobile_number,fee,details)
 		VALUES
-		(?,?,?,?,?)
+		(?,?,?,?,?,?)
 		`, loadstable), trans_date, trans_code,
-		fee, 1,loads_details)
+		fee, mobile_num, 1, loads_details)
 	if err != nil {
 		return result, err
 	}
