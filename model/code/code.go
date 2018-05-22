@@ -234,7 +234,7 @@ func Code2Brgy(db Connection, trans_date string, codecount string, details strin
 	fee_string := fmt.Sprintf("%.2f", float64(fee))
 
 	trans_details := "Code2Brgy: |"
-	trans_details = trans_details + "-  Subtract " + amount + " from load.|"
+	trans_details = trans_details + "-  Subtract " + amount + " from code.|"
 	trans_details = trans_details + "-  Add " + amount + " to cash.|"
 	trans_details = trans_details + "-  Add " + fee_string + " to cash as fee.|"
 	trans_details = trans_details + "Details: " + details
@@ -300,7 +300,7 @@ func Code2Dealer(db Connection, trans_date string, codecount string, details str
 	fee_string := fmt.Sprintf("%.2f", float64(fee))
 
 	trans_details := "Code2Dealer: |"
-	trans_details = trans_details + "-  Subtract " + amount + " from load.|"
+	trans_details = trans_details + "-  Subtract " + amount + " from code.|"
 	trans_details = trans_details + "-  Add " + amount + " to cash.|"
 	trans_details = trans_details + "-  Add " + fee_string + " to cash as fee.|"
 	trans_details = trans_details + "Details: " + details
