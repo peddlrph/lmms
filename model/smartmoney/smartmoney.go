@@ -15,6 +15,7 @@ var (
 	smartmoneytable = "smartmoney"
 	transtable      = "transaction"
 	cashtable       = "cash"
+	phonebooktable  = "phonebook"
 )
 
 // Item defines the model.
@@ -24,8 +25,10 @@ type Item struct {
 	Trans_Datetime_Formatted string
 	Amount                   sql.NullFloat64 `db:"amount"`
 	Amount_String            string
+	Mobile_Number            sql.NullString `db:"mobile_number"`
 	Details                  string
 	Details_Split            []string
+	Name                     sql.NullString `db:"name"`
 	CreatedAt                mysql.NullTime `db:"created_at"`
 	UpdatedAt                mysql.NullTime `db:"updated_at"`
 	DeletedAt                mysql.NullTime `db:"deleted_at"`
@@ -56,12 +59,20 @@ func ByID(db Connection, ID string) (Item, bool, error) {
 func All(db Connection) ([]Item, float32, bool, error) {
 	var result []Item
 	var sum float32
+	// err := db.Select(&result, fmt.Sprintf(`
+	//	SELECT id, trans_datetime, amount, mobile_number,details, created_at, updated_at, deleted_at
+	//	FROM %v
+	//	WHERE deleted_at IS NULL
+	//	ORDER BY created_at DESC
+	//	`, table))
+
 	err := db.Select(&result, fmt.Sprintf(`
-		SELECT id, trans_datetime, amount, details, created_at, updated_at, deleted_at
-		FROM %v
+		SELECT id, trans_datetime, %v.mobile_number,amount, details, name, created_at, updated_at, deleted_at
+		FROM %v LEFT JOIN %v ON %v.mobile_number = %v.mobile_number
 		WHERE deleted_at IS NULL
 		ORDER BY created_at DESC
-		`, table))
+		`, table, table, phonebooktable, table, phonebooktable))
+
 	_ = db.Get(&sum, fmt.Sprintf(`
 		SELECT sum(amount)
 		FROM %v
@@ -133,7 +144,7 @@ func SmartMoneyWithCash(db Connection, trans_date string, amount string, details
 	return result, err
 }
 
-func EncashSmartMoney(db Connection, trans_date string, amount string, details string) (sql.Result, error) {
+func EncashSmartMoney(db Connection, trans_date string, amount string, mobile_num string, details string) (sql.Result, error) {
 	amt, _ := strconv.ParseFloat(amount, 64)
 
 	fee := fmt.Sprintf("%.2f", amt*(0.005))
@@ -190,15 +201,15 @@ func EncashSmartMoney(db Connection, trans_date string, amount string, details s
 	sm_details = sm_details + transactiontag
 	result, err = db.Exec(fmt.Sprintf(`
 		INSERT INTO %v
-		(trans_datetime,trans_code,amount,details)
+		(trans_datetime,trans_code,amount,mobile_number,details)
 		VALUES
-		(?,?,?,?)
+		(?,?,?,?,?)
 		`, smartmoneytable), trans_date, trans_code,
-		amt, sm_details)
+		amt, mobile_num, sm_details)
 	return result, err
 }
 
-func TransferToVirtual(db Connection, trans_date string, amount string, nofee string, details string) (sql.Result, error) {
+func TransferToVirtual(db Connection, trans_date string, amount string, mobile_num string, nofee string, details string) (sql.Result, error) {
 	amt, _ := strconv.ParseFloat(amount, 64)
 	var fee string
 
@@ -247,11 +258,11 @@ func TransferToVirtual(db Connection, trans_date string, amount string, nofee st
 	sm_details = sm_details + transactiontag
 	result, err = db.Exec(fmt.Sprintf(`
 		INSERT INTO %v
-		(trans_datetime,trans_code,amount,details)
+		(trans_datetime,trans_code,amount,mobile_number,details)
 		VALUES
-		(?,?,?,?)
+		(?,?,?,?,?)
 		`, smartmoneytable), trans_date, trans_code,
-		amt*(-1), sm_details)
+		amt*(-1), mobile_num, sm_details)
 
 	cash_details = "TransferToVirtual: |"
 	cash_details = cash_details + details + "|"

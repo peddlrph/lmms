@@ -89,7 +89,7 @@ func Create(db Connection, name string) (sql.Result, error) {
 	return result, err
 }
 
-func ReceiveSP(db Connection, trans_date string, amount string, details string) (sql.Result, error) {
+func ReceiveSP(db Connection, trans_date string, amount string, mobile_num string, details string) (sql.Result, error) {
 	amt, _ := strconv.ParseFloat(amount, 64)
 
 	fee := get_receivefee(amt, 1000, 11.5)
@@ -120,19 +120,19 @@ func ReceiveSP(db Connection, trans_date string, amount string, details string) 
 	sm_details = sm_details + transactiontag
 	result, err = db.Exec(fmt.Sprintf(`
 		INSERT INTO %v
-		(trans_datetime,trans_code,amount,details)
+		(trans_datetime,trans_code,amount,mobile_number,details)
 		VALUES
-		(?,?,?,?)
+		(?,?,?,?,?)
 		`, smartmoneytable), trans_date, trans_code,
-		amt, sm_details)
+		amt, mobile_num, sm_details)
 
 	result, err = db.Exec(fmt.Sprintf(`
 		INSERT INTO %v
-		(trans_datetime,trans_code,amount,fee,details)
+		(trans_datetime,trans_code,amount,fee,mobile_number,details)
 		VALUES
-		(?,?,?,?,?)
+		(?,?,?,?,?,?)
 			`, smartmoneytable), trans_date, trans_code,
-		fee, 1, sm_details)
+		fee, 1, mobile_num, sm_details)
 
 	cash_details := "ReceiveSP: |"
 	cash_details = cash_details + "Details: " + details + "|"
@@ -176,7 +176,7 @@ func ReceiveSP(db Connection, trans_date string, amount string, details string) 
 	return result, err
 }
 
-func SendSP(db Connection, trans_date string, amount string, details string) (sql.Result, error) {
+func SendSP(db Connection, trans_date string, amount string, mobile_num string, details string) (sql.Result, error) {
 	amt, _ := strconv.ParseFloat(amount, 64)
 
 	_, fee2sender, fee2receiver := get_sendfees(amt)
@@ -223,11 +223,11 @@ func SendSP(db Connection, trans_date string, amount string, details string) (sq
 	sm_details = sm_details + transactiontag
 	result, err = db.Exec(fmt.Sprintf(`
 		INSERT INTO %v
-		(trans_datetime,trans_code,amount,details)
+		(trans_datetime,trans_code,amount,mobile_number,details)
 		VALUES
-		(?,?,?,?)
+		(?,?,?,?,?)
 		`, smartmoneytable), trans_date, trans_code,
-		amt*(-1), sm_details)
+		amt*(-1), mobile_num, sm_details)
 	if err != nil {
 		return result, err
 	}
@@ -250,11 +250,11 @@ func SendSP(db Connection, trans_date string, amount string, details string) (sq
 
 	result, err = db.Exec(fmt.Sprintf(`
 		INSERT INTO %v
-		(trans_datetime,trans_code,amount,details)
+		(trans_datetime,trans_code,amount,mobile_number,details)
 		VALUES
-		(?,?,?,?)
+		(?,?,?,?,?)
 		`, smartmoneytable), trans_date, trans_code,
-		fee2receiver*(-1), sm_details)
+		fee2receiver*(-1), mobile_num, sm_details)
 
 	/*
 		sp_details := "SendSP: |"

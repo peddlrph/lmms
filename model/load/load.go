@@ -16,6 +16,7 @@ var (
 	cashtable       = "cash"
 	smartmoneytable = "smartmoney"
 	transtable      = "transaction"
+	phonebooktable  = "phonebook"
 )
 
 // Item defines the model.
@@ -29,6 +30,7 @@ type Item struct {
 	Amount_String            string
 	Details                  string
 	Details_Split            []string
+	Name                     sql.NullString `db:"name"`
 	CreatedAt                mysql.NullTime `db:"created_at"`
 	UpdatedAt                mysql.NullTime `db:"updated_at"`
 	DeletedAt                mysql.NullTime `db:"deleted_at"`
@@ -60,11 +62,11 @@ func All(db Connection) ([]Item, float32, bool, error) {
 	var result []Item
 	var sum float32
 	err := db.Select(&result, fmt.Sprintf(`
-		SELECT id, trans_datetime, trans_code,mobile_number,amount, details, created_at, updated_at, deleted_at
-		FROM %v
+		SELECT id, trans_datetime, trans_code,%v.mobile_number,amount, details, name, created_at, updated_at, deleted_at
+		FROM %v LEFT JOIN %v ON %v.mobile_number = %v.mobile_number
 		WHERE deleted_at IS NULL
 		ORDER BY created_at DESC
-		`, table))
+		`, table, table, phonebooktable, table, phonebooktable))
 	_ = db.Get(&sum, fmt.Sprintf(`
 		SELECT sum(amount)
 		FROM %v
