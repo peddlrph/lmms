@@ -26,8 +26,9 @@
     	<tr>
         	<th>Transaction Date</th>
         	<th>Amount</th>
+        	<th>Mobile Number</th>
         	<th>Details</th>
-        	<th>Actions</th>
+        	<th>Name</th>
     	</tr>
     </thead>
     <tbody>
@@ -40,12 +41,14 @@
 		<tr>
 		<td>{{.Trans_Datetime_Formatted}}</td>
 		<td>{{.Amount_String}}</td>
+		<td>{{.Mobile_Number.String}}</td>
 		<td>
 		{{range $s := .Details_Split}}
 		{{.}}<br>
 		{{end}}
 		</td>
-		<td><!--<a title="View" class="btn btn-info" role="button" href="{{$.CurrentURI}}/view/{{.ID}}">
+		<!--
+		<td><a title="View" class="btn btn-info" role="button" href="{{$.CurrentURI}}/view/{{.ID}}">
 						<span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> View
 					</a>
 				<a title="Edit" class="btn btn-warning" role="button" href="{{$.CurrentURI}}/edit/{{.ID}}">
@@ -57,8 +60,14 @@
 						</button>
 						<input type="hidden" name="_token" value="{{$.token}}">
 					</form>
-	-->	</td>
-
+		</td> -->
+		{{ if .Name.String }}
+		<td>{{.Name.String}}</td>
+		{{ else if .Mobile_Number.String}}
+		<td><a href="{{$.BaseURI}}phonebook/edit/{{.Mobile_Number.String}}">Add Name</a></td>
+		{{ else }}
+		<td></td>
+		{{ end }}
 		</tr>
 	{{end}}
 	</tbody>
