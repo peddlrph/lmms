@@ -31,9 +31,9 @@
         	<th>Transaction Date</th>
         	<th>TransCode</th>
         	<th>Mobile</th> 
-        	<th>Details</th>
         	<th>Amount</th>
-        	<th>Actions</th>
+        	<th>Details</th>
+        	<th>Name</th>
     	</tr>
     </thead>
     <tbody>
@@ -67,8 +67,15 @@
 						</button>
 						<input type="hidden" name="_token" value="{{$.token}}">
 					</form>
-		-->
-		</td>
+		
+		</td>-->
+		{{ if .Name.String }}
+		<td>{{.Name.String}}</td>
+		{{ else if .Mobile_Number.String}}
+		<td><a href="{{$.BaseURI}}phonebook/edit/{{.Mobile_Number.String}}">Add Name</a></td>
+		{{ else }}
+		<td></td>
+		{{ end }}
 		</tr>
 	{{end}}
 	</tbody>
