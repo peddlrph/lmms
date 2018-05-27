@@ -10,7 +10,9 @@
 			<label for="trans_datetime">Date</label>
 			<div><input type="date" class="form-control" id="trans_datetime" name="trans_datetime" size="10" value={{.curdate}} /></input></div>
 			<label for="amount">Amount</label>
-			<div><input type="text" class="form-control" id="amount" name="amount" size="10" placeholder="Amount" /></input></div>
+			<div><input type="text" class="form-control" id="amount" name="amount" size="10" placeholder="Amount" ></input></div>
+			<label for="mobile_number">Mobile Number</label>
+			<div><input type="text" class="form-control" id="mobile_number" name="mobile_number" size="12" placeholder="Mobile Number" ></input></div>			
 			<label for="details">Details</label>
 			<div><textarea rows="5" class="form-control" id="details" name="details" placeholder="Type your text here..." />{{TEXTAREA "name" .item.Details .}}</textarea></div>
 		</div>
