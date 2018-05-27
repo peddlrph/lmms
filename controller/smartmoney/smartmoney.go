@@ -9,6 +9,7 @@ import (
 
 	"github.com/blue-jay/blueprint/lib/flight"
 	"github.com/blue-jay/blueprint/middleware/acl"
+	"github.com/blue-jay/blueprint/model/phonebook"
 	"github.com/blue-jay/blueprint/model/smartmoney"
 	"github.com/peddlrph/lib/utilities"
 
@@ -115,18 +116,26 @@ func EncashSmartMoney(w http.ResponseWriter, r *http.Request) {
 func EncashSmartMoneySave(w http.ResponseWriter, r *http.Request) {
 	c := flight.Context(w, r)
 
-	if !utilities.IsNumeric(r.FormValue("amount")) {
-		c.FlashNotice("Enter valid amount")
-		Create(w, r)
+	//if !utilities.IsNumeric(r.FormValue("amount")) {
+	//	c.FlashNotice("Enter valid amount")
+	//	Create(w, r)
+	//	return
+	//}
+
+	if !utilities.IsNumeric(r.FormValue("amount")) || !utilities.IsMobileNumber(r.FormValue("mobile_number")) {
+		c.FlashNotice("Enter valid entries")
+		EncashSmartMoney(w, r)
 		return
 	}
 
-	_, err := smartmoney.EncashSmartMoney(c.DB, r.FormValue("trans_datetime"), r.FormValue("amount"), r.FormValue("details"))
+	_, err := smartmoney.EncashSmartMoney(c.DB, r.FormValue("trans_datetime"), r.FormValue("amount"), r.FormValue("mobile_number"), r.FormValue("details"))
 	if err != nil {
 		c.FlashErrorGeneric(err)
-		Create(w, r)
+		EncashSmartMoney(w, r)
 		return
 	}
+
+	_, _ = phonebook.AddMobileNumberToPhonebook(c.DB, r.FormValue("mobile_number"))
 
 	c.FlashSuccess("Item added.")
 	c.Redirect(uri)
@@ -145,18 +154,20 @@ func TransferToVirtual(w http.ResponseWriter, r *http.Request) {
 func TransferToVirtualSave(w http.ResponseWriter, r *http.Request) {
 	c := flight.Context(w, r)
 
-	if !utilities.IsNumeric(r.FormValue("amount")) {
+	if !utilities.IsNumeric(r.FormValue("amount")) || !utilities.IsMobileNumber(r.FormValue("mobile_number")) {
 		c.FlashNotice("Enter valid amount")
-		Create(w, r)
+		TransferToVirtual(w, r)
 		return
 	}
 
-	_, err := smartmoney.TransferToVirtual(c.DB, r.FormValue("trans_datetime"), r.FormValue("amount"), r.FormValue("nofee"), r.FormValue("details"))
+	_, err := smartmoney.TransferToVirtual(c.DB, r.FormValue("trans_datetime"), r.FormValue("amount"), r.FormValue("mobile_number"), r.FormValue("nofee"), r.FormValue("details"))
 	if err != nil {
 		c.FlashErrorGeneric(err)
-		Create(w, r)
+		TransferToVirtual(w, r)
 		return
 	}
+
+	_, _ = phonebook.AddMobileNumberToPhonebook(c.DB, r.FormValue("mobile_number"))
 
 	c.FlashSuccess("Item added.")
 	c.Redirect(uri)

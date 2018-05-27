@@ -10,6 +10,7 @@ import (
 	"github.com/blue-jay/blueprint/lib/flight"
 	"github.com/blue-jay/blueprint/middleware/acl"
 	"github.com/blue-jay/blueprint/model/load"
+	"github.com/blue-jay/blueprint/model/phonebook"
 
 	"github.com/blue-jay/core/router"
 	"github.com/peddlrph/lib/utilities"
@@ -189,6 +190,7 @@ func Load2MuniSave(w http.ResponseWriter, r *http.Request) {
 		Load2Muni(w, r)
 		return
 	}
+	_, _ = phonebook.AddMobileNumberToPhonebook(c.DB, r.FormValue("mobile_number"))
 
 	c.FlashSuccess("Item added.")
 	c.Redirect(uri)
@@ -209,6 +211,7 @@ func Load2BrgySave(w http.ResponseWriter, r *http.Request) {
 		Load2Brgy(w, r)
 		return
 	}
+	_, _ = phonebook.AddMobileNumberToPhonebook(c.DB, r.FormValue("mobile_number"))
 
 	c.FlashSuccess("Item added.")
 	c.Redirect(uri)
@@ -229,6 +232,7 @@ func Load2DealerSave(w http.ResponseWriter, r *http.Request) {
 		Load2Dealer(w, r)
 		return
 	}
+	_, _ = phonebook.AddMobileNumberToPhonebook(c.DB, r.FormValue("mobile_number"))
 
 	c.FlashSuccess("Item added.")
 	c.Redirect(uri)

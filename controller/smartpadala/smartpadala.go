@@ -9,6 +9,7 @@ import (
 
 	"github.com/blue-jay/blueprint/lib/flight"
 	"github.com/blue-jay/blueprint/middleware/acl"
+	"github.com/blue-jay/blueprint/model/phonebook"
 	"github.com/blue-jay/blueprint/model/smartpadala"
 
 	"github.com/blue-jay/core/router"
@@ -92,18 +93,20 @@ func SendSP(w http.ResponseWriter, r *http.Request) {
 func ReceiveSPSave(w http.ResponseWriter, r *http.Request) {
 	c := flight.Context(w, r)
 
-	if !IsNumeric(r.FormValue("amount")) {
+	if !IsNumeric(r.FormValue("amount")) || !utilities.IsMobileNumber(r.FormValue("mobile_number")) {
 		c.FlashNotice("Enter valid amount")
-		Create(w, r)
+		ReceiveSP(w, r)
 		return
 	}
 
-	_, err := smartpadala.ReceiveSP(c.DB, r.FormValue("trans_datetime"), r.FormValue("amount"), r.FormValue("details"))
+	_, err := smartpadala.ReceiveSP(c.DB, r.FormValue("trans_datetime"), r.FormValue("amount"), r.FormValue("mobile_number"), r.FormValue("details"))
 	if err != nil {
 		c.FlashErrorGeneric(err)
-		Create(w, r)
+		ReceiveSP(w, r)
 		return
 	}
+
+	_, _ = phonebook.AddMobileNumberToPhonebook(c.DB, r.FormValue("mobile_number"))
 
 	c.FlashSuccess("Item added.")
 	c.Redirect(sm_uri)
@@ -112,18 +115,20 @@ func ReceiveSPSave(w http.ResponseWriter, r *http.Request) {
 func SendSPSave(w http.ResponseWriter, r *http.Request) {
 	c := flight.Context(w, r)
 
-	if !IsNumeric(r.FormValue("amount")) {
+	if !IsNumeric(r.FormValue("amount")) || !utilities.IsMobileNumber(r.FormValue("mobile_number")) {
 		c.FlashNotice("Enter valid amount")
-		Create(w, r)
+		SendSP(w, r)
 		return
 	}
 
-	_, err := smartpadala.SendSP(c.DB, r.FormValue("trans_datetime"), r.FormValue("amount"), r.FormValue("details"))
+	_, err := smartpadala.SendSP(c.DB, r.FormValue("trans_datetime"), r.FormValue("amount"), r.FormValue("mobile_number"), r.FormValue("details"))
 	if err != nil {
 		c.FlashErrorGeneric(err)
-		Create(w, r)
+		SendSP(w, r)
 		return
 	}
+
+	_, _ = phonebook.AddMobileNumberToPhonebook(c.DB, r.FormValue("mobile_number"))
 
 	c.FlashSuccess("Item added.")
 	c.Redirect(sm_uri)
