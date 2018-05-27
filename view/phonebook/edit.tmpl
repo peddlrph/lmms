@@ -1,0 +1,39 @@
+{{define "title"}}Edit Contact Data{{end}}
+{{define "head"}}{{end}}
+{{define "content"}}
+	<div class="page-header">
+		<h1>{{template "title" .}}</h1>
+	</div>
+	
+	<form method="post" action="{{$.CurrentURI}}?_method=patch">
+		<div class="form-group">
+			<label for="name">Mobile Number</label>
+			<div><p>{{.item.MobileNumber}}</p></div><br>
+			<label for="name">Name</label>
+			<div><input type="text" class="form-control" id="name" name="name" size="50" value={{.item.Name.String}} ></input></div><br>			
+			<label for="category">Category</label> <input type="radio" id="category" name="category" value={{.item.Category.String}} checked>{{.item.Category.String}}</input><br>
+			<div>
+				<input type="radio" id="category" name="category" value="Customer" >Customer</input><br>
+				<input type="radio" id="category" name="category" value="Dealer" >Dealer</input><br>
+				<input type="radio" id="category" name="category" value="Barangay Stockist" >Barangay Stockist</input><br>
+				<input type="radio" id="category" name="category" value="Municipal Stockist" >Municipal Stockist</input><br>
+				<input type="radio" id="category" name="category" value="Provincial Stockist" >Provincial Stockist</input><br>
+			</div><br>
+			<label for="location">Location</label>
+			<div><input type="text" class="form-control" id="location" name="location" size="20" value={{.item.Location.String}} ></input></div>
+		</div>
+		
+		<button type="submit" class="btn btn-success" title="Save" />
+			<span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Save
+		</button>
+		
+		<a title="Back" class="btn btn-default" role="button" href="{{$.GrandparentURI}}">
+			<span class="glyphicon glyphicon-menu-left" aria-hidden="true"></span> Back
+		</a>
+		
+		<input type="hidden" name="_token" value="{{$.token}}">
+	</form>
+	<p>{{.mobile_number}}</p>
+	{{template "footer" .}}
+{{end}}
+{{define "foot"}}{{end}}
