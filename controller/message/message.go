@@ -7,7 +7,7 @@ import (
 	"github.com/blue-jay/blueprint/lib/flight"
 	"github.com/blue-jay/blueprint/middleware/acl"
 	"github.com/blue-jay/blueprint/model/message"
-	"github.com/blue-jay/blueprint/model/mobile_ip"
+	//	"github.com/blue-jay/blueprint/model/mobile_ip"
 
 	"github.com/blue-jay/core/router"
 )
@@ -35,22 +35,21 @@ func Load() {
 func Index(w http.ResponseWriter, r *http.Request) {
 	c := flight.Context(w, r)
 
-	items, balance, err := message.All(c.DB)
+	items, err := message.All(c.DB)
 	if err != nil {
 		c.FlashErrorGeneric(err)
 		//items = []message.Item{}
 	}
 
-	mobile_ip, _, err := mobile_ip.ByID(c.DB, "1")
-	if err != nil {
-		c.FlashErrorGeneric(err)
-		//items = []message.Item{}
-	}
+	//mobile_ip, _, err := mobile_ip.ByID(c.DB, "1")
+	//if err != nil {
+	//	c.FlashErrorGeneric(err)
+	//items = []message.Item{}
+	//}
 
 	v := c.View.New("message/index")
 	v.Vars["items"] = items
-	v.Vars["ip_address"] = mobile_ip.IP_Address
-	v.Vars["balance"] = balance
+	//v.Vars["ip_address"] = mobile_ip.IP_Address
 	v.Render(w, r)
 }
 
