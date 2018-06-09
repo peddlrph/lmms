@@ -10,12 +10,13 @@
 			<span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Refresh
 		</a>
 	</p>
+	<!--
 	<p>
 		<a title="Add" class="btn btn-primary" role="button" href="{{.BaseURI}}mobile_ip/edit/1">
 			<span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Set IP
 		</a>
 	</p>
-
+	-->
 
 
 	<table class="table"><thead>
@@ -24,6 +25,7 @@
         	<th>Address</th>
         	<th>Msg_Box</th>
         	<th>Message</th>
+        	<th>Synced</th>
         <!--	<th>Body</th>
         	<th>Msg_Box</th> -->
     	</tr>
@@ -37,14 +39,15 @@
 	{{range $n := .items}}
 		<tr>
 		<td>{{.Id}}</td>
-		<td>{{.Address}}</td>
-		<td>{{.Msg_Box}}</td>
-		<td>{{.Body}}</td>
+		<td>{{.Address.String}}</td>
+		<td>{{.Msg_Box.String}}</td>
+		<td>{{.Body.String}}</td>
+		<td>{{.Synced.String}}</td>
 		</tr>
 	{{end}}
 	</tbody>
 	</table>
-	<p>IP Address: {{.ip_address}}</p>
+	<!--<p>IP Address: {{.ip_address}}</p> -->
 	{{template "footer" .}}
 {{end}}
 {{define "foot"}}{{end}}
