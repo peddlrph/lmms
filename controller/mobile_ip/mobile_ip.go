@@ -2,13 +2,16 @@
 package mobile_ip
 
 import (
+	"fmt"
+	//	"io/ioutil"
 	"net/http"
 
 	"github.com/blue-jay/blueprint/lib/flight"
 	"github.com/blue-jay/blueprint/middleware/acl"
+	"github.com/blue-jay/blueprint/model/message"
 	"github.com/blue-jay/blueprint/model/mobile_ip"
-
 	"github.com/blue-jay/core/router"
+	"github.com/peddlrph/lib/smsgateway"
 )
 
 var (
@@ -113,15 +116,37 @@ func Update(w http.ResponseWriter, r *http.Request) {
 		Edit(w, r)
 		return
 	}
-
-	_, err := mobile_ip.Update(c.DB, r.FormValue("ip_address"), c.Param("id"))
-	if err != nil {
-		c.FlashErrorGeneric(err)
+	if r.FormValue("sync_code") != "a1b2c3d4e5" {
 		Edit(w, r)
 		return
 	}
 
-	c.FlashSuccess("Item updated.")
+	if smsgateway.CheckStatus(r.FormValue("ip_address")) != "ready" {
+		fmt.Println("Mobile Device: Offline")
+	} else {
+		fmt.Println("Mobile Device: ready")
+		//mesgs, err := smsgateway.GetMessages(r.FormValue("ip_address"), "1000")
+		mesgs, err := smsgateway.GetMessages(r.FormValue("ip_address"), "10000")
+		//mesgs, err := ioutil.ReadFile("./asset/messages/messages.json")
+
+		if err != nil {
+			fmt.Println("Error retrieving messages.")
+			fmt.Println("Upload FAILED")
+		} else {
+			fmt.Println("Messages retrieved")
+			_ = message.SyncMessages(c.DB, mesgs)
+		}
+		//fmt.Println("Messages Uploaded")
+	}
+
+	//_, err := mobile_ip.Update(c.DB, r.FormValue("ip_address"), c.Param("id"))
+	//if err != nil {
+	//	c.FlashErrorGeneric(err)
+	//	Edit(w, r)
+	//	return
+	//}
+
+	//c.FlashSuccess("Item updated.")
 	c.Redirect(message_uri)
 }
 
