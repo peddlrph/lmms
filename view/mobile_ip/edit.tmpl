@@ -9,15 +9,18 @@
 	<form method="post" action="{{.BaseURI}}mobile_ip/edit/1?_method=patch">
 		
 		<div class="form-group">
-			<label for="ip_address">Item</label>
+			<label for="ip_address">IP Address</label>
 			<div><input type="text" class="form-control" id="ip_address" name="ip_address" size="10" placeholder="IP Address" /></input></div>
 		</div>
-		
-		<button type="submit" class="btn btn-success" title="Save" />
-			<span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Save
+		<div class="form-group">
+			<label for="sync_code">Sync Code</label>
+			<div><input type="text" class="form-control" id="sync_code" name="sync_code" size="10" placeholder="Sync Code" /></input></div>
+		</div>
+		<button type="submit" class="btn btn-success" title="Sync Messages" />
+			<span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Sync
 		</button>
 		
-		<a title="Back" class="btn btn-default" role="button" href="{{$.GrandparentURI}}">
+		<a title="Back" class="btn btn-default" role="button" href="{{.BaseURI}}message">
 			<span class="glyphicon glyphicon-menu-left" aria-hidden="true"></span> Back
 		</a>
 		
