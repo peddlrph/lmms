@@ -3,8 +3,9 @@ package message
 
 import (
 	"database/sql"
-	//	"encoding/json"
+	"encoding/json"
 	"fmt"
+	"strconv"
 	//"net/http"
 	//"github.com/go-sql-driver/mysql"
 	//	"github.com/blue-jay/blueprint/model/mobile_ip"
@@ -26,11 +27,18 @@ type Message struct {
 	Synced  sql.NullString `db:"synced"`
 }
 
+type MessageJson struct {
+	Address string `json:"address"`
+	Body    string `json:"body"`
+	Msg_Box string `json:"msg_box"`
+	Id      string `json:"_id"`
+}
+
 type Item struct {
 	Limit    string `json:"limit"`
 	Offset   string `json:"offset"`
 	Size     string `json:"size"`
-	Messages []Message
+	Messages []MessageJson
 }
 
 // Connection is an interface for making queries.
@@ -75,7 +83,7 @@ func All(db Connection) ([]Message, error) {
 
 	err := db.Select(&messages, fmt.Sprintf(`
 		SELECT id, address,msg_box, body,synced
-		FROM %v
+		FROM %v ORDER BY id DESC
 		`, table))
 
 	//messages := mesgs.Messages
@@ -182,4 +190,92 @@ func DeleteSoft(db Connection, ID string) (sql.Result, error) {
 		`, table),
 		ID)
 	return result, err
+}
+
+func SyncMessages(db Connection, Msg []byte) error {
+
+	mesgs := Item{}
+
+	json.Unmarshal([]byte(Msg), &mesgs)
+	fmt.Println("Limit: " + mesgs.Limit)
+	messages := mesgs.Messages
+	fmt.Println(messages[0])
+
+	//stmt, err := db.Prepare("INSERT INTO messages(id,body,msg_box,address) VALUES(?,?,?,?)")
+
+	var max_id sql.NullInt64
+
+	err := db.Get(&max_id, fmt.Sprintf(`SELECT max(id) FROM %v`, table))
+
+	fmt.Println(max_id.Int64)
+
+	if err != nil {
+		fmt.Println("error")
+		return err
+	}
+
+	for _, mesg := range messages {
+		id, _ := strconv.Atoi(mesg.Id)
+		if id > int(max_id.Int64) {
+			fmt.Println(id)
+			//stmt.Exec(mesg.Id, mesg.Body, mesg.Msg_Box, mesg.Address)
+			_, _ = db.Exec(fmt.Sprintf(`
+				INSERT INTO %v (id,body,msg_box,address)
+				VALUES(?,?,?,?)
+				`, table), id, mesg.Body, mesg.Msg_Box, mesg.Address)
+		}
+	}
+
+	return err
+
+	/* _, err := db.Exec(fmt.Sprintf(`
+		INSERT INTO %v
+		(id,body,msg_box,address)
+		VALUES
+		(?,?,?,?)
+		`, table),
+		name)
+	err
+	*/
+
+	/*
+			db, err := sql.Open("mysql", config.DBConnect)
+			defer db.Close()
+
+			if err != nil {
+				log.Fatal(err)
+			}
+			stmt, err := db.Prepare("INSERT INTO messages(id,body,msg_box,address) VALUES(?,?,?,?)")
+			if err != nil {
+				log.Fatal(err)
+			}
+			defer stmt.Close()
+
+			var max_id sql.NullString
+			err = db.QueryRow("SELECT max(id) FROM messages").Scan(&max_id)
+
+			if err != nil {
+				log.Fatal(err)
+			}
+			//fmt.Println(max_id.String)
+			var max_int int
+			if max_id.Valid {
+				max_int, err = strconv.Atoi(max_id.String)
+				if err != nil {
+					log.Fatal(err)
+				}
+			} else {
+				max_int = 0
+			}
+			//fmt.Println(i)
+
+			for _, mesg := range messages {
+				if mesg.Id > max_int {
+					//fmt.Println(mesg.Id)
+					stmt.Exec(mesg.Id, mesg.Body, mesg.Msg_Box, mesg.Address)
+				}
+			}
+
+		return err
+	*/
 }
